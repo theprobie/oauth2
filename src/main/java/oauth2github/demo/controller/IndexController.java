@@ -32,11 +32,13 @@ public class IndexController {
         map.put("state", "cainiao");
         map.put("code", code);
         map.put("redirect_uri", "http://localhost:8081/callbackURL");
+        //用户授权回调此接口，带上code。然后发送请求获取access_token
         Map<String,String> resp = restTemplate.postForObject("https://github.com/login/oauth/access_token", map, Map.class);
         System.out.println(resp);
         HttpHeaders httpheaders = new HttpHeaders();
         httpheaders.add("Authorization", "token " + resp.get("access_token"));
         HttpEntity<?> httpEntity = new HttpEntity<>(httpheaders);
+        //根据access_token发送请求，获取用户信息
         ResponseEntity<Map> exchange = restTemplate.exchange("https://api.github.com/user", HttpMethod.GET, httpEntity, Map.class);
         System.out.println("exchange.getBody() = " + new ObjectMapper().writeValueAsString(exchange.getBody()));
         return "forward:/index.html";
